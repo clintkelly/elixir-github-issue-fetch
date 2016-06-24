@@ -28,10 +28,10 @@ defmodule Issues.TableFormatter do
 
   ## Example
 
-    iex> list = [Enum.into([{"a", "1"}, {"b", "2"}, {"c", "3"}], %{}),
-    ...>         Enum.into([{"a", "4"}, {"b", "5"}, {"c", "6"}], %{})]
-    iex> Issues.TableFormatter.split_into_cols(list, ~w(a b c))
-    [["1", "4"], ["2", "5"], ["3", "6"]]
+      iex> list = [Enum.into([{"a", "1"}, {"b", "2"}, {"c", "3"}], %{}),
+      ...>         Enum.into([{"a", "4"}, {"b", "5"}, {"c", "6"}], %{})]
+      iex> Issues.TableFormatter.split_into_cols(list, ~w(a b c))
+      [["1", "4"], ["2", "5"], ["3", "6"]]
 
   """
   def split_into_cols(rows, headers) do
