@@ -11,6 +11,7 @@ defmodule Issues.CLI do
     argv
     |> parse_args
     |> process
+    |> print
   end
 
   @doc """
@@ -43,11 +44,12 @@ defmodule Issues.CLI do
     System.halt(0)
   end
 
-  def process({user, project, _count}) do
+  def process({user, project, count}) do
     Issues.GithubIssues.fetch(user, project)
     |> decode_response
     |> convert_to_list_of_maps
     |> sort_into_ascending_order
+    |> Enum.take(count)
   end
 
   def decode_response({:ok, body}), do: body
@@ -65,5 +67,28 @@ defmodule Issues.CLI do
 
   def sort_into_ascending_order(list_of_issues) do
     Enum.sort list_of_issues, &(&1["created_at"] <= &2["created_at"])
+    list_of_issues
+  end
+
+  def print(list_of_issues) do
+    widths = [3, 19, 50]
+    header = print_cols(~w(# created_at title), widths)
+    bar = print_cols(["","",""], widths, ?-, "-+-")
+    rest = list_of_issues
+    |> Enum.map(&([
+      Integer.to_string(&1["number"]),
+      &1["created_at"],
+      &1["title"]
+    ]))
+    |> Enum.map(&(print_cols(&1, widths)))
+
+    [header | [bar | rest]]
+  end
+
+  def print_cols(data, widths, padding \\ ?\s, sep \\ " | ") do
+    IO.puts(inspect data)
+    Enum.zip(data, widths)
+    |> Enum.map(fn {d, w} -> String.ljust(d, w, padding) end)
+    |> Enum.join(sep)
   end
 end
